@@ -216,7 +216,7 @@ def get_rain_serie(file_path: str,encoding='utf-8') -> pd.DataFrame:
         raise ValueError("No rain serie found bellow 'GAGE' line.")
     df_rain = pd.DataFrame([line.split('\t') for line in rain], columns=["intensity_m/s", "time"])
     df_rain = df_rain.apply(pd.to_numeric)
-    df_rain["intensity_mm/m"] = df_rain["intensity_m/s"] * 10**3 *60
+    df_rain["intensity_mm/min"] = df_rain["intensity_m/s"] * 10**3 *60
     df_rain["intensity_mm/h"] = df_rain["intensity_mm/min"] *60
     return df_rain
 
@@ -379,7 +379,6 @@ def get_outfall_network_flow(path_to_drainage: str, time_step_minute: int|float)
 
 def read_overland_stats(path_to_overland_stats: str) -> dict:
     """Read the information inside the overland_sumary.stats file
-
     Args:
         path_to_overland_stats (str): path to the overland_sumary.stats file. Usually "Outputs\Stat\overland_summary.stats"
 

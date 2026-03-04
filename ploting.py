@@ -243,7 +243,7 @@ def create_animated_map(grids: list[np.array], metadata: dict,
                           title: str="Titre", color: str='blues_r', fig_dim: tuple[int, int]=(None, None), 
                           unit: list=["Data", "unit"], 
                           time_step=None, time_step_unit: str="loop", 
-                          grids_hover: np.array = None, info_hover: list =None) -> go.Figure:
+                          grids_hover: list[np.array] = None, info_hover: list[str] =None) -> go.Figure:
     """Creates an animated heatmap from a list of 2D grids, with optional hover information and a time slider.
 
     Args:
