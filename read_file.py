@@ -2,9 +2,13 @@ import numpy as np
 import pandas as pd
 import os
 from typing import Optional
-from data_handling import natural_key
+import re
+
 from swmm_api import read_rpt_file
 
+def natural_key(s):
+    """For natural sorting """
+    return [int(x) if x.isdigit() else x.lower()for x in re.split(r'(\d+)', s)]
 
 #### Lecture des fichiers asc
 def read_asc_file(file_path:str, ignore_first_line=True, metadata_len: int=6, encoding: str="utf-8"):
@@ -299,13 +303,14 @@ def create_dict_luse(file_path: str, encoding="utf-8") -> dict[int, dict[str, an
     return soil_param_by_id
 
 
-def get_timed_grid(grid_files_paths: list[str], ignore_first_line: bool=False,
+def get_timed_grid(grid_files_paths: list[str], ignore_first_line: bool=False, natural_sorting=True,
                    metadata_len=6, encoding: str="utf-8") -> tuple[dict, np.array]:
     """Reads and merges multiple ASC grid files into a single 3D NumPy array, along with their metadata.
 
     Args:
         grid_files_paths (list[str]): List of the path to the different files to read
         ignore_first_line (bool, optional): If the first line of the file is not usefull. Defaults to True.
+        natural_sorting (bool): To sort the paths by natural order
         metadata_len (int): Number of metadat line. Defaults to 6.
         encoding (str): Type of encoding. Defaults "utf-8"
 
@@ -314,9 +319,11 @@ def get_timed_grid(grid_files_paths: list[str], ignore_first_line: bool=False,
         
     Notes: 
     - Only ASC files are processed; files with "xml" in their name are ignored.
-    - The order of grids in `grids_merged` follows the order of files in `grid_files`.
+    - The order of grids in `grids_merged` follows the natural order.
     """
     grids = []
+    if natural_sorting:
+        grid_files_paths = sorted(grid_files_paths, key= lambda x: natural_key(x))
     for path in grid_files_paths:
         # Dont use xml files
         if "xml" not in path:

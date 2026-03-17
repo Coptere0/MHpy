@@ -81,7 +81,7 @@ def create_plotly_map(grid: np.array, metadata: dict,
             zmax=maxi, zmin=mini,
             x=x, y=y,
             customdata=customdata_test,
-            hovertemplate=f"<b>{unit[0]}:" +" %{z:.2f}" + f" {unit[1]}<extra></extra></b><br>"+
+            hovertemplate=f"<b>{unit[0]}:" +" %{z:.4f}" + f" {unit[1]}<extra></extra></b><br>"+
                             "Ligne: %{customdata[0]}<br>" +
                             "Colonne: %{customdata[1]}<br>",
             colorscale=color
@@ -311,7 +311,7 @@ def create_animated_map(grids: list[np.array], metadata: dict,
             zmax=maxi, zmin=mini,
             x=x, y=y,
             customdata=customdata_test,
-            hovertemplate=f"<b>{unit[0]}:" +" %{z:.2f}" + f" {unit[1]}<extra></extra></b><br>"+
+            hovertemplate=f"<b>{unit[0]}:" +" %{z:.4f}" + f" {unit[1]}<extra></extra></b><br>"+
                             "Ligne: %{customdata[0]}<br>" +
                             "Colonne: %{customdata[1]}<br>",
             colorscale=color,
