@@ -384,13 +384,7 @@ def get_outfall_network_flow(path_to_drainage: str, time_step_minute: int|float)
 
 
 def read_overland_stats(path_to_overland_stats: str) -> dict:
-    """Read the information inside the overland_sumary.stats file
-    Args:
-        path_to_overland_stats (str): path to the overland_sumary.stats file. Usually "Outputs\Stat\overland_summary.stats"
-
-    Returns:
-        dict: Dictionnary regrouping the information of the overland_summary_stats
-    """
+    
     with open(path_to_overland_stats, "r") as f:
         overland_sum_stats = [line.strip() for line in f.readlines()]
     overland_sum_stats = [line for line in overland_sum_stats if ".=" in line]
@@ -448,5 +442,5 @@ def get_mod_to_elev(path_to_mod_file: str, encoding="utf-8") -> dict:
 
     with open(path_to_mod_file, "r", encoding=encoding) as f:
         items = [line.strip() for line in f]
-        dic = {key: value for key, value in [i.split() for i in items]}
+        dic = {key: float(value) for key, value in [i.split() for i in items]}
     return dic

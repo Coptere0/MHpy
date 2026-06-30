@@ -1,3 +1,3 @@
-bat 5
-road -0.1
-noue -0.3
+House 5
+Road -0.05
+Gully -0.3

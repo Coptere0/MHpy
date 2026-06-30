@@ -4,7 +4,7 @@ import pandas
 import numpy as np
 import data_handling
 import os
-
+import json
 #######################################
 #    Reading the general input file   #
 ####################################### 
@@ -162,7 +162,7 @@ if del_folder == "y" or new_folder:
     df_inp = read_file.get_input_timeseries(r"Inputs/MHDC", 100)
     water_balance = data_handling.compute_water_balance(overland_stat, meta_luse, df_outfall, grids_infiltdepth[-1], gully_house_mask, df_inp )
     print(water_balance)
-    print("//////////// eaustagne = ", np.nansum(grids_waterdepth[-1] *2 *2))
+    
     # df_outfall = read_file.get_outfall_network_flow(drainage_path, time_step_minute=3)
 
 

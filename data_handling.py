@@ -2,6 +2,7 @@ import re
 import numpy as np
 import read_file 
 import pandas as pd
+import json
 
 def natural_key(s):
     """For natural sorting """
@@ -38,6 +39,8 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
                           last_infilt_grid: np.array,
                           luse_mask_to_swmm: np.array,
                           list_df_timeseries_inp: list[pd.DataFrame],
+                          info: str=None,
+                          save_file: str=None
                          ) -> dict:
     """_summary_
 
@@ -49,6 +52,8 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
         last_infilt_grid (np.array): _description_
         luse_mask_to_swmm (np.array): _description_
         list_df_timeseries_inp (list[pd.DataFrame]): _description_
+        list_SfN (list[str]): _description_
+        save_file (str): Name of the text file to store the water balance
 
     Returns:
 
@@ -63,6 +68,8 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
     V_out = overland_stats["Volume leaving the Watershed, V_out (m3)"]
     V_infilt_tot = overland_stats["Volume Infiltrated Overland, V_inf (m3)"]
     V_excess = overland_stats["Cumulative Rainfall Excess (Rain-Intercept-Infilt) (m3)"]
+    V_runoff = overland_stats["Volume leaving the Watershed via Overland Flow (m3)"]
+    V_stag = V_excess - V_runoff
     print("------------------------------------------------------\n"
         f"Overland_stats TREX : \n"
         "------------------------------------------------------\n"
@@ -71,7 +78,9 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
       f"Net rain : {net_rain} m3\n"
       f"V_out (infiltration + overland flow) : {V_out} m3\n"
       f"Infiltration total : {V_infilt_tot} m3\n"
-      f"V_excess (eau qui reste en surface): {V_excess} m3")
+      f"Overland flow : {V_runoff} m3\n"
+      f"V_surf : {V_stag.round(2)} m3\n"
+      f"Verif {(net_rain-V_infilt_tot-V_runoff-V_stag).round(2)} = 0")
     
     
     to_swmm_grid = last_infilt_grid * luse_mask_to_swmm # Keeping only pixels related to swmm
@@ -83,7 +92,7 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
         "------------------------------------------------------\n"
         f"Volume true infiltration : {V_infilt_true.round(2)} m3\n"
         f"Exclusion des pixels de luse_mask_to_swmm : \n"
-      f"Voume infiltration to SWMM : {V_to_swmm.round(2)} m3")
+        f"Voume infiltration to SWMM : {V_to_swmm.round(2)} m3")
 
     list_vol = []
     for df in list_df_timeseries_inp:
@@ -97,12 +106,29 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
         f"Somme des volumes timeseries (m3) : {V_timeseries}\n"
         f"Somme volume outfall (m3) :         {V_outfall}\n"
         f"Eau perdue dans SWMM (m3) :         {V_water_lost_swmm.round(2)}\n")
+    
+    water_balance = dict(gross_rain=gross_rain,
+                interception=interception,
+                net_rain=net_rain,
+                V_runoff=V_runoff,
+                V_stag=V_stag,
+                V_infilt_tot=V_infilt_tot,
+                V_infilt_true=V_infilt_true,
+                V_to_swmm=V_to_swmm,
+                V_timeseries=V_timeseries,
+                V_outfall=V_outfall
+                )
+    
+    if save_file:
+        with open(f"{save_file}.txt", "w") as file:
+            file.write(json.dumps(water_balance))
 
     return dict(gross_rain=gross_rain,
                 interception=interception,
                 net_rain=net_rain,
+                V_runoff=V_runoff,
+                V_stag=V_stag
                 V_infilt_tot=V_infilt_tot,
-                V_excess=V_excess,
                 V_infilt_true=V_infilt_true,
                 V_to_swmm=V_to_swmm,
                 V_timeseries=V_timeseries,
