@@ -335,7 +335,6 @@ def get_timed_grid(grid_files_paths: list[str], ignore_first_line: bool=False, n
 
 
 
-
 # Evolution du volume et du débit à l'exutoire du réseau
 def get_outfall_network_flow(path_to_drainage: str, time_step_minute: int|float) -> pd.DataFrame:
     """Get the variations of the outfall flow for the .rpt file in the Drainage directory using swmm_api 

@@ -71,9 +71,11 @@ if del_folder == "y" or new_folder:
     map_mask.write_html(rf"{new_path}\map_mask.html")
     # SOILS MAP #
     dict_luse = read_file.create_dict_luse(file_path=surface_path)
-    palette = ['#3a7535', "#9E711E", "#73C263", "#8D8D8D", "#ffc935", "#359b06", '#7a807a']
+    palette = ['#3a7535', "#9E711E", "#73C263", "#8D8D8D", "#ffc935", "#359b06", '#7a807a', '#7a807a', "#ff0000", '#7a807a', '#7a807a', '#7a807a', "#ff0800"]
     map_soil = ploting.create_plotly_map_soil(grid=grid_soil, metadata=meta_soil, dict_luse=dict_luse, fig_dim=(1000,1000), palette=palette, title=f"Soil map {sim_name}")
     map_soil.write_html(rf"{new_path}\soil_map.html")
+    map_luse = ploting.create_plotly_map_soil(grid=grid_luse, metadata=meta_luse, dict_luse=dict_luse, fig_dim=(1000,1000), palette=palette, title=f"Soil map {sim_name}")
+    map_luse.write_html(rf"{new_path}\luse_map.html")
     # Elevation map
     map_elev = ploting.create_plotly_map(grid=grid_elev, metadata=meta_elev, unit=["Elevation", "m"], grids_hover=[grid_soil], info_hover=["Soil type"], fig_dim=(1000,1000), title=f"Elev map {sim_name}" )
     map_elev.write_html(rf"{new_path}\map_elev.html")
@@ -92,8 +94,8 @@ if del_folder == "y" or new_folder:
     key = infiltration_depth_path.split("/")[-1]
     infiltdepth_paths = [rf"{path}\{file}" for file in os.listdir(path) if key in file]
     meta_infiltdepth, grids_infiltdepth = read_file.get_timed_grid(infiltdepth_paths, ignore_first_line=False)
-        # gully_house_mask = data_handling.create_mask_luse(dict_luse, grid_soil, names_to_mask=[ 'House'])
-        # grids_infiltdepth_mask = [grid *~ gully_house_mask for grid in grids_infiltdepth ]
+    gully_house_mask = data_handling.create_mask_luse(dict_luse, grid_soil, names_to_mask=['Gully', 'House'])
+    grids_infiltdepth_mask = [grid *~ gully_house_mask for grid in grids_infiltdepth ]
     # Water depth
     path = "/".join(water_depth_path.split("/")[:-1])
     key = water_depth_path.split("/")[-1]
@@ -115,6 +117,12 @@ if del_folder == "y" or new_folder:
                                                  )
     map_raindepth.write_html(rf"{new_path}/raindepth_map.html")
     # Infiltration depth
+    map_infildepth_mask = ploting.create_animated_map(grids_infiltdepth_mask, metadata=meta_infiltdepth, fig_dim=(1000,1000), 
+                                                unit=["Infiltdepth", "m"], time_step=time_step_h*60, time_step_unit="minutes", 
+                                                grids_hover=[grid_soil, grid_elev], info_hover=["Soil", "Elev"],
+                                                )
+    map_infildepth_mask.write_html(rf"{new_path}/infildepth_map_mask.html")
+
     map_infildepth = ploting.create_animated_map(grids_infiltdepth, metadata=meta_infiltdepth, fig_dim=(1000,1000), 
                                                 unit=["Infiltdepth", "m"], time_step=time_step_h*60, time_step_unit="minutes", 
                                                 grids_hover=[grid_soil, grid_elev], info_hover=["Soil", "Elev"],
@@ -132,7 +140,29 @@ if del_folder == "y" or new_folder:
                                                 grids_hover=[grid_soil, grid_elev], info_hover=["Soil", "Elev"],
                                                 )
     map_waterdis.write_html(rf"{new_path}\water_dis_map.html")
+
+    df_outfall = read_file.get_outfall_network_flow(r"Outputs/Drainage", time_step_minute=3)
+    df_rain = read_file.get_rain_serie(file_path=surface_path)
+    print(df_rain.columns)
+
+    hydrogramme = ploting.create_hydrogramme(df_rain.loc[:, ["time", "intensity_mm/h"]], list_df_outfall=[df_outfall.loc[:, ["time_h", "Q_m3/s"]]], 
+                       legend_rain="Précipitation", legends_outfall=["Exutoire"],
+                       axis_title=["Temps (h)", "Débit (m3/s)", "Précipitation (mm)"],
+                       max_range_rain=80, max_range_outfall=0.2,
+                       x_range=None, bar_width=None,
+                       title="hydrogramme " + sim_name, fig_dim=(1000, 500))
+    hydrogramme.write_html(rf"{new_path}\hydrogramme.html")
+
+    df_nodes = read_file.get_nodes_coord(drainage_input_path)
+    df_conduits = read_file.get_conduits(drainage_input_path)
+    map_network = ploting.create_network_map(df_conduits, df_nodes, bg_map=map_mask, fig_dim=(1000,1000) )
+    map_network.write_html(rf"map_network.html")
     
+    overland_stat = read_file.read_overland_stats(r"Outputs/Stat/overland_summary.stats")
+    df_inp = read_file.get_input_timeseries(r"Inputs/MHDC", 100)
+    water_balance = data_handling.compute_water_balance(overland_stat, meta_luse, df_outfall, grids_infiltdepth[-1], gully_house_mask, df_inp )
+    print(water_balance)
+    print("//////////// eaustagne = ", np.nansum(grids_waterdepth[-1] *2 *2))
     # df_outfall = read_file.get_outfall_network_flow(drainage_path, time_step_minute=3)
 
 
