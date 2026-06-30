@@ -69,8 +69,8 @@ def mod_elev_grid(elev_init: np.array, grid_luse: np.array, luse_dict: dict, mod
         np.array: Modified elevation grid
     """
     elev_mod = elev_init.copy()
-    for luse, mod in mod_to_do.items:
-        code_sol = luse_dict[luse]
+    for luse, mod in mod_to_do.items():
+        code_sol = luse_dict[i["id"] for i in luse_dict.keys if i["name"] == luse ]
         mask_to_mod = grid_luse == code_sol
         elev_mod = elev_mod + mod * mask_to_mod
     return elev_mod
