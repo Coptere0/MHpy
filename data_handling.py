@@ -42,6 +42,7 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
     """_summary_
 
     Args:
+
         overland_stats (dict): _description_
         metadata (dict): _description_
         df_outfall (pd.Dataframe): _description_
@@ -50,6 +51,7 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
         list_df_timeseries_inp (list[pd.DataFrame]): _description_
 
     Returns:
+
         dict: _description_
     """
     cell_size = metadata["cellsize"]
@@ -95,8 +97,6 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
         f"Somme des volumes timeseries (m3) : {V_timeseries}\n"
         f"Somme volume outfall (m3) :         {V_outfall}\n"
         f"Eau perdue dans SWMM (m3) :         {V_water_lost_swmm.round(2)}\n")
-    
-    print()
 
     return dict(gross_rain=gross_rain,
                 interception=interception,
@@ -108,3 +108,33 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
                 V_timeseries=V_timeseries,
                 V_outfall=V_outfall
                 )
+
+def write_asc_file(file_name: str, metadata: dict, grid: np.array, title: str, nan_value: int = -9999, format: str='%.3f') -> None:
+    """Creation of a .asc file to use with Multi-Hydro
+
+    Args:
+        file_name (str): Name of the file to write
+        metadata (dict): dictionary containing spatial metadata for the grid. Must include:
+            - 'xllcorner': x-coordinate of the lower-left corner.
+            - 'yllcorner': y-coordinate of the lower-left corner.
+            - 'cellsize': Size of each grid cell.
+            - 'ncols': Number of columns in the grid.
+            - 'nrows': Number of rows in the grid.
+        grid (np.array): 2D grid of data
+        title (str): first line of the file
+        nan_value (int, optional): Value to write instead of Nan. Defaults to -9999.
+        format (str, optional): Format uuse to write de data. Defaults to %.3f
+    
+    Notes:
+        - Some MH input data MUST have a title line at the begining of the file. Refere to MH documentation.
+    
+    Returns:
+        None
+    """
+    meta = [f"{key} {value}\n" for key, value in metadata.items()]
+    header = title + "".join(meta)
+    grid_write = grid.copy()
+    grid_write = np.nan_to_num(grid_write, nan=nan_value)
+    np.savetxt(file_name, grid_write, fmt=format, delimiter=' ', newline='\n', header=header, footer='', comments='', encoding=None)
+    print (f"{file_name} as been created")
+    return None

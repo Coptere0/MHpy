@@ -22,7 +22,7 @@ def create_plotly_map(grid: np.array, metadata: dict,
         grid (np.ndarray):
             2D array representing the data to be visualized.
         metadata (dict):
-            dict_soilnary containing spatial metadata for the grid. Must include:
+            dictionary containing spatial metadata for the grid. Must include:
             - 'xllcorner': x-coordinate of the lower-left corner.
             - 'yllcorner': y-coordinate of the lower-left corner.
             - 'cellsize': Size of each grid cell.
