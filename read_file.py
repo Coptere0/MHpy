@@ -430,3 +430,23 @@ def get_input_timeseries(path_to_inp_files: str, report_number: int) -> list[pd.
         list_df.append(df_time_serie)
     return list_df
 
+def get_mod_to_elev(path_to_mod_file: str, encoding="utf-8") -> dict:
+    """Create the dictionnary to modify he elevation grid.
+
+    Args:
+        path_to_mod_file (str): Path to the file with elevation modification informations
+        encoding (str, optional): Encoding of the file. Defaults to "utf-8".
+
+    Raises:
+        FileNotFoundError: File does not exist
+
+    Returns:
+        dict: Dictionnary with elevation modification (in meter) to make depending on the landuse
+    """
+    if not os.path.exists(path_to_mod_file):
+        raise FileNotFoundError(f"The file {path_to_mod_file} does not exist.")
+
+    with open(path_to_mod_file, "r", encoding=encoding) as f:
+        items = [line.strip() for line in f]
+        dic = {key: value for key, value in [i.split() for i in items]}
+    return dic

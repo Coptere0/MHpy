@@ -120,6 +120,7 @@ def write_asc_file(file_name: str, metadata: dict, grid: np.array, title: str, n
             - 'cellsize': Size of each grid cell.
             - 'ncols': Number of columns in the grid.
             - 'nrows': Number of rows in the grid.
+            - 'NODATA_value': Value related to no data
         grid (np.array): 2D grid of data
         title (str): first line of the file
         nan_value (int, optional): Value to write instead of Nan. Defaults to -9999.
@@ -131,10 +132,27 @@ def write_asc_file(file_name: str, metadata: dict, grid: np.array, title: str, n
     Returns:
         None
     """
-    meta = [f"{key} {value}\n" for key, value in metadata.items()]
-    header = title + "".join(meta)
+
+    # --- Prepare header ---
+    header_lines = [
+        f"ncols         {metadata['ncols']}",
+        f"nrows         {metadata['nrows']}",
+        f"xllcorner     {metadata['xllcorner']}",
+        f"yllcorner     {metadata['yllcorner']}",
+        f"cellsize      {metadata['cellsize']}",
+        f"NODATA_value  {metadata['NODATA_value']}"
+    ]
+
+     # Add title if provided (some MH inputs require it)
+    if title:
+        header_lines.insert(0, title)
+    header = "\n".join(header_lines) + "\n"
     grid_write = grid.copy()
     grid_write = np.nan_to_num(grid_write, nan=nan_value)
-    np.savetxt(file_name, grid_write, fmt=format, delimiter=' ', newline='\n', header=header, footer='', comments='', encoding=None)
+    with open(file_name, 'w') as f:
+        f.write(header)  # Write header
+        np.savetxt(f, grid_write, fmt=format, delimiter=' ', newline='\n')
     print (f"{file_name} as been created")
     return None
+
+

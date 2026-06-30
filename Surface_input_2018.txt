@@ -1,0 +1,90 @@
+input file name : Raoult pre 2m cor
+Pluie standard
+KSIM  1  NROW 118 NCOL 106 DX 2 DY 2 TZERO 0.0 TSTART 0.0
+DTOPT 1
+DTMAX 5 MAXCOURANT 0.9 RELAXATION 1 ENDTIME 5.
+DTOUPUTFILE Outputs/MHSC/dtfile.txt
+NPRINTOUT  1 
+0.05  5
+NPRINTGRID  1 GRIDSTART 0
+0.05  5
+ECHO Outputs/Stat/watertest.eco
+*** Data Group B: Hydrologic Parameters *******************
+MASK Inputs/mask_2m_bassin.asc
+ELEVATION  Inputs/elev_pre_2m_fillsink.asc
+INFOPT 1
+NSOILS 9
+1.9e-6 0.01 0.1 Forest
+1.9e-6 0.01 0.1 Grass
+1.0e-10 0.01 0.1 Road
+1.0e-10 0.01 0.1 Impervious Surface
+1.0e-10 0.01 0.1 House
+1.0e-10 0.01 0.1 Terre
+1.0e-10 0.01 0.1 Copeau
+1.0e-10 0.01 0.1 Ilotveg
+10.0e-1 0.01 0.1 Gully
+
+SOIL_TYPES Inputs/luse_pre_2m_cor.asc
+NLANDS 9
+0.8 7.62 FOREST
+0.8 3.81 GRASS
+0.012 1.9 ROAD
+0.012 1.9 IMPERVIOUS SURFACE
+0.012 1.9 HOUSE
+0.012 1.9 TERRE
+0.012 1.9 COPEAU
+0.012 1.9 ILOTVEG
+0.9 0 GULLY
+
+LANDUSE Inputs/luse_pre_2m_cor.asc
+STORAGE_DEPTHS Inputs/storagedepth_2m_bassin.asc
+CHNOPT 0
+INITIAL_WATER_OVERLAND Inputs/initialwateroverland_2m_bassin.asc
+INITIAL_INFILTRATION Inputs/initialinfiltration_2m_bassin.asc
+RAINOPT 0
+NRAINGAGES 1
+CONVUNIT 1.0 CONVTIME 1.0 SCALE 1.0
+GAGE 1 620840 6876375 16
+0.000E+00	0.00000
+5.333E-06	0.08333
+5.333E-06	0.16667
+6.667E-06	0.25000
+6.667E-06	0.33333
+8.667E-06	0.41667
+8.667E-06	0.50000
+9.333E-06	0.58333
+9.333E-06	0.66667
+9.333E-06	0.75000
+6.333E-06	0.83333
+6.333E-06	0.91667
+5.333E-06	1.00000
+0.000E+00	1.08333
+0.000E+00	2.00000
+0.000E+00	5.00000
+SNOWOPT 0 MELTOPT 0
+NUMBER_OF_OVERLAND_FLOWS 0
+NOVERLANDOUTLETS 3
+OUTLET1 16 2 0.0168 0
+OUTLET2 45 2 0.0168 0
+OUTLET3 111 6 0.0168 0
+NQREPORTS 3
+16 2 0.53 1 out1
+45 2 0.53 1 out2
+111 6 0.53 1 out3
+*** Data Group E: Environmental Properties ****************
+General_Environmental_Properties_NPROPG 0
+*** Data Group F: Output Specification Controls ***********
+-------------EXPORT TIME SERIES OUTPUTS-------------
+WATEREXPORT               Outputs/Stat/overland_discharge.exp
+-------------POINT-IN-TIME GRID OUTPUTS-------------
+RAINFALL_RATE             Outputs/Grids/Rain/rainrate
+RAINFALL_DEPTH            Outputs/Grids/Rain/raindepth
+INFILTRATION_RATE         Outputs/Grids/Infiltration/infiltrate
+INFILTRATION_DEPTH        Outputs/Grids/Infiltration/infiltdepth
+WATER_DISCHARGE           Outputs/Grids/Flow/waterdischarge
+WATER_DEPTH               Outputs/Grids/Flow/waterdepth
+-------------SIMULATION SUMMARY OUTPUTS-------------
+DUMP_FILE
+MASS_BALANCE  Outputs/Stat/overland_balance.msb
+SUMMARY_STATISTICS  Outputs/Stat/overland_summary.stats
+
