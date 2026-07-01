@@ -79,8 +79,8 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
       f"V_out (infiltration + overland flow) : {V_out} m3\n"
       f"Infiltration total : {V_infilt_tot} m3\n"
       f"Overland flow : {V_runoff} m3\n"
-      f"V_surf : {V_stag.round(2)} m3\n"
-      f"Verif {(net_rain-V_infilt_tot-V_runoff-V_stag).round(2)} = 0")
+      f"V_surf : {round(V_stag, 2)} m3\n"
+      f"Verif {round((net_rain-V_infilt_tot-V_runoff-V_stag),2)} = 0")
     
     
     to_swmm_grid = last_infilt_grid * luse_mask_to_swmm # Keeping only pixels related to swmm
@@ -127,7 +127,7 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
                 interception=interception,
                 net_rain=net_rain,
                 V_runoff=V_runoff,
-                V_stag=V_stag
+                V_stag=V_stag,
                 V_infilt_tot=V_infilt_tot,
                 V_infilt_true=V_infilt_true,
                 V_to_swmm=V_to_swmm,
