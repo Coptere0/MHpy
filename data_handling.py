@@ -52,7 +52,7 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
         last_infilt_grid (np.array): _description_
         luse_mask_to_swmm (np.array): _description_
         list_df_timeseries_inp (list[pd.DataFrame]): _description_
-        list_SfN (list[str]): _description_
+        info (pd.Dataframe): _description_
         save_file (str): Name of the text file to store the water balance
 
     Returns:
@@ -116,12 +116,14 @@ def compute_water_balance(overland_stats: dict, metadata:dict,
                 V_infilt_true=V_infilt_true,
                 V_to_swmm=V_to_swmm,
                 V_timeseries=V_timeseries,
-                V_outfall=V_outfall
+                V_outfall=V_outfall,
+                V_debord=V_water_lost_swmm,
                 )
     
     if save_file:
         with open(f"{save_file}.txt", "w") as file:
-            file.write(json.dumps(water_balance))
+            file.write(json.dumps(water_balance, indent=0))
+        print(f"Water balance saved in {save_file}.txt")
 
     return dict(gross_rain=gross_rain,
                 interception=interception,

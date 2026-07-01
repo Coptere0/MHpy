@@ -160,7 +160,7 @@ if del_folder == "y" or new_folder:
     
     overland_stat = read_file.read_overland_stats(r"Outputs/Stat/overland_summary.stats")
     df_inp = read_file.get_input_timeseries(r"Inputs/MHDC", 100)
-    water_balance = data_handling.compute_water_balance(overland_stat, meta_luse, df_outfall, grids_infiltdepth[-1], gully_house_mask, df_inp )
+    water_balance = data_handling.compute_water_balance(overland_stat, meta_luse, df_outfall, grids_infiltdepth[-1], gully_house_mask, df_inp, save_file=f"wb_{sim_name}" )
     print(water_balance)
     
     # df_outfall = read_file.get_outfall_network_flow(drainage_path, time_step_minute=3)

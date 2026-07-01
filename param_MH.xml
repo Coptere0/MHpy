@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+<row>
+    <name>Forest</name>
+    <code_sol>1</code_sol>
+    <modif_elev>0</modif_elev>
+    <sfn>False</sfn>
+    <infilt_inf>True</infilt_inf>
+    <h_subverse>False</h_subverse>
+    <to_SWMM>False</to_SWMM>
+    <to_TREX>False</to_TREX>
+</row>
+
+<row>
+    <name>Grass</name>
+    <code_sol>2</code_sol>
+    <modif_elev>0</modif_elev>
+    <sfn>False</sfn>
+    <infilt_inf>True</infilt_inf>
+    <h_subverse>False</h_subverse>
+    <to_SWMM>False</to_SWMM>
+    <to_TREX>False</to_TREX>
+</row>
+
+<row>
+    <name>Road</name>
+    <code_sol>3</code_sol>
+    <modif_elev>-0.05</modif_elev>
+    <sfn>False</sfn>
+    <infilt_inf>False</infilt_inf>
+    <h_subverse>False</h_subverse>
+    <to_SWMM>False</to_SWMM>
+    <to_TREX>False</to_TREX>
+</row>
+
+<row>
+    <name>Impervious Surface</name>
+    <code_sol>4</code_sol>
+    <modif_elev>0</modif_elev>
+    <sfn>False</sfn>
+    <infilt_inf>False</infilt_inf>
+    <h_subverse>False</h_subverse>
+    <to_SWMM>False</to_SWMM>
+    <to_TREX>False</to_TREX>
+</row>
+
+
+
+<row>
+    <name>Housefree</name>
+    <code_sol>5</code_sol>
+    <modif_elev>5</modif_elev>
+    <sfn>False</sfn>
+    <infilt_inf>False</infilt_inf>
+    <h_subverse>False</h_subverse>
+    <to_SWMM>False</to_SWMM>
+    <to_TREX>Noue_70</to_TREX>
+</row>
+</root>
+<!-- Name; Code_sol; Modif_elev; SfN; infilt_inf; h_surverse; to_SWMM
+Forest; 1; 0; 0; 1; 0; 0
+Grass; 2; 0; 0; 1; 0; 0
+Road; 3; -0.1; 0; 0; 0; 
+Impervious Surface; 4; 0; 0; 0; 0; 1
+Housefree; 5; 5; 0; 0; 0; 0
+Terre; 6; 0; 1; 1; 0; 0
+Copeau; 7; -0.05; 1; 1; 0; 0
+Ilotveg; 8; -0.05; 1; 1; 0; 0 
+Gully; 9; -0.2; 0; 0; 0; 1
+House; 10; 6; 0; 0; 0; 1
+noue30; 11; -0.05; 1; 1; 0.28; 0
+noue70; 12; -0.05; 1; 1; 0. -->

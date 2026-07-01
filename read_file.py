@@ -444,3 +444,23 @@ def get_mod_to_elev(path_to_mod_file: str, encoding="utf-8") -> dict:
         items = [line.strip() for line in f]
         dic = {key: float(value) for key, value in [i.split() for i in items]}
     return dic
+
+
+def read_info_xml(path_to_info: str)-> pd.DataFrame :
+    """Read the .xml info file
+
+    Args:
+        path_to_info (str): Path to the .xml file
+
+    Raises:
+        FileNotFoundError: File does not exist
+
+    Returns:
+        pd.DataFrame: Dataframe of the .xml info file
+    """
+    if not os.path.exists(path_to_info):
+            raise FileNotFoundError(f"The file {path_to_info} does not exist.")
+    df_info = pd.read_xml("path_to_info")
+    print(f"The .xml info file : {path_to_info} has been succesfully read")
+
+    return df_info
