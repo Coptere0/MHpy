@@ -100,7 +100,7 @@ def get_inputoutput_files_path(file_path: str, encoding="utf-8") -> tuple[dict[s
 
 
 ### Récupérer les informations sur les noeuds ###
-def get_nodes_coord(file_path: str, encoding='utf-8') -> Optional[pd.DataFrame]:
+def get_nodes_coord(file_path: str, ) -> Optional[pd.DataFrame]:
     """Extract node coordinates from the drainage input file, specifically from the [COORDINATES] section.
 
     Args:
@@ -118,7 +118,7 @@ def get_nodes_coord(file_path: str, encoding='utf-8') -> Optional[pd.DataFrame]:
     """
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file {file_path} does not exist.")
-    with open(file_path, 'r', encoding=encoding) as file:
+    with open(file_path, 'r',) as file:
         nodes = []
         lire_nodes = False
         for line in file:

@@ -70,7 +70,8 @@ def mod_elev_grid(elev_init: np.array, grid_luse: np.array, luse_dict: dict, mod
     """
     elev_mod = elev_init.copy()
     for luse, mod in mod_to_do.items():
+        print("Modifying elevation for ", luse, " with modification: ", mod)
         code_sol = [luse_dict[i]["id"] for i in luse_dict.keys() if luse_dict[i]["name"] == luse ][0]
         mask_to_mod = grid_luse == code_sol
-        elev_mod = elev_mod + mod * mask_to_mod.astype(int)
+        elev_mod = elev_mod + mod * mask_to_mod
     return elev_mod
