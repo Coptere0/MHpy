@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from scipy import ndimage
 
 def cor_elev_pb(
@@ -75,3 +76,63 @@ def mod_elev_grid(elev_init: np.array, grid_luse: np.array, luse_dict: dict, mod
         mask_to_mod = grid_luse == code_sol
         elev_mod = elev_mod + mod * mask_to_mod
     return elev_mod
+
+def add_gully_luse(grid_gully: np.array, grid_luse: np.array, code_gully: int,) -> np.array:
+    """Add the gullies to the landuse grid
+
+    Args:
+        grid_gully (np.array): grid with the gullies (pixel=1 when gully)
+        grid_luse (np.array): Land use grid
+        code_gully (int): Luse code use for the gullies
+
+    Returns:
+        np.array: _description_
+    """
+    data_luse_gully = grid_luse.copy()
+    data_luse_gully[(grid_gully==1) & (~np.isnan(data_luse_gully))] = code_gully
+
+    return data_luse_gully
+
+def get_pos_gully(nodes_coord: pd.DataFrame, list_gully_nodes: list, metadata: dict):
+    nrows = metadata["nrows"]
+    cellsize = metadata["cellsize"]
+    xllcorner = metadata["xllcorner"]
+    yllcorner = metadata["yllcorner"]
+    gully_pos = nodes_coord.copy()
+    gully_pos = gully_pos.loc[gully_pos["Node"].isin(list_gully_nodes), ]
+    # Find the position of eacg gully in the grid
+    gully_pos["col"] = ((gully_pos.X - xllcorner) / cellsize).astype(int)
+    gully_pos["row"] = nrows - 1 - np.floor((gully_pos.Y - yllcorner) / cellsize).astype(int)
+    # Sorting the way MH find gullies in the landuse grid (top -> bottom, left -> right)
+    gully_pos.sort_values(["row", "col"], inplace=True, ignore_index=True )
+
+    return gully_pos
+
+def correct_inflows_file(path_new_file: str, path_drainage_file:str ,gully_pos: pd.DataFrame) -> None :
+    """Create a new drainage input file with sorted inflows lines to match the grids reading of MH
+
+    Args:
+        path_new_file (str): PAth to the new input drainage file
+        gully_pos (pd.DataFrame): Dataframe of the gullies, must contain the columns Node, row, col
+
+    Returns:
+        None: Nothing
+    """
+    # Sorting the gully position
+    gully_pos.sort_values(["row", "col"], inplace=True, ignore_index=True)
+    with open(path_drainage_file, "r") as f:
+        data= f.readlines()
+    # Finding the index of infloxs line
+    index_add_start = data.index("[INFLOWS]\n") + 4
+    index_add_end = data.index("[TIMESERIES]\n") -1
+    text_to_add = [f"{node}    FLOW    {i}    FLOW    1.0    1    \n" for node, i in 
+                zip(gully_pos.Node, range(1,len(gully_pos.Node)+1))]
+    # Replacing the inflows lines
+    data[index_add_start:index_add_end] = text_to_add
+    # Wrinting the new file
+    with open(path_new_file, "w") as f:
+        f.write("".join(data))
+        print(f"{path_new_file} created with correct inflows")
+
+    return None
+    

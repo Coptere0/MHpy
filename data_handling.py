@@ -183,4 +183,26 @@ def write_asc_file(file_name: str, metadata: dict, grid: np.array, title: str, n
     print (f"{file_name} as been created")
     return None
 
+def check_log_connect(df_log: pd.DataFrame, df_config: pd.DataFrame)-> bool:
+    """Check if the sum of source volume is equal to cible volume for each luse
+
+    Args:
+        df_log (pd.DataFrame): Dataframe containing the log (connect_landuse.csv)
+        df_config (pd.DataFrame): Dataframe containing the configuration of the connections (land_config.csv)
+
+    Returns:
+        bool: _description_
+    """
+    df_log_source = df_log.loc[df_log.index.str.contains("source")]
+    df_log_cible = df_log.loc[df_log.index.str.contains("cible")]
+    df_config_bis = pd.merge(df_config, df_config.loc[:, ["name", "code_sol"]], how="inner", left_on="to_TREX", right_on="code_sol",suffixes=('_source', '_cible'))
+    df_connec = df_config_bis.loc[:, ["name_source", "code_sol_source" ,"name_cible", "code_sol_cible"]]
+    df_connec["vol_source"] = df_log_source.loc[df_log_source.index.isin([f"source_{x}" for x in list(df_connec.name_source.values)])].values
+    df_connec["vol_cible"] = df_log_cible.loc[df_log_cible.index.isin([f"cible_{x}" for x in list(df_connec.name_cible.values)])].values
+    df_connec["check_vol"] = df_connec["vol_source"] == df_connec["vol_cible"]
+    if df_connec.check_vol.unique()==True:
+        print("All connections are OK")
+    else:
+        print("Some connections are not OK")
+    return df_connec
 

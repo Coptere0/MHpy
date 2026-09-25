@@ -445,22 +445,35 @@ def get_mod_to_elev(path_to_mod_file: str, encoding="utf-8") -> dict:
         dic = {key: float(value) for key, value in [i.split() for i in items]}
     return dic
 
+def get_inflows_nodes(file_path: str, ) -> pd.DataFrame:
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    with open(file_path, 'r',) as file:
+        nodes = []
+        lire_nodes = False
+        for line in file:
+            if line.strip() == '[INFLOWS]':
+                lire_nodes = True
+                continue
+            if lire_nodes and line.strip().startswith('['):
+                break  # Arrêter à la prochaine section
+            if lire_nodes and line.strip() and not line.startswith(';;'):
+                nodes.append(line.strip())
+    if not nodes:
+        raise ValueError("No nodes found in the [INFLOWS] section.")
+    return [int(node.split()[0]) for node in nodes]
 
-def read_info_xml(path_to_info: str)-> pd.DataFrame :
-    """Read the .xml info file
+def read_connect_log(file_path: str) -> pd.DataFrame:
+    try:
+        df = pd.read_csv(file_path).sum()
+    except Exception as e:
+        raise ValueError(f"Error reading the file {file_path}: {e}")
+    return df
 
-    Args:
-        path_to_info (str): Path to the .xml file
-
-    Raises:
-        FileNotFoundError: File does not exist
-
-    Returns:
-        pd.DataFrame: Dataframe of the .xml info file
-    """
-    if not os.path.exists(path_to_info):
-            raise FileNotFoundError(f"The file {path_to_info} does not exist.")
-    df_info = pd.read_xml("path_to_info")
-    print(f"The .xml info file : {path_to_info} has been succesfully read")
-
-    return df_info
+def read_land_config(file_path: str) -> pd.DataFrame:
+    try:
+        df = pd.read_csv(file_path)
+    except Exception as e:
+        raise ValueError(f"Error reading the file {file_path}: {e}")
+    return df
+    

@@ -1,3 +1,0 @@
-House 5
-Road -0.05
-Gully -0.3

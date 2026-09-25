@@ -60,7 +60,7 @@ if del_folder == "y" or new_folder:
     # Landuse map
     meta_luse, grid_luse = read_file.read_asc_file(file_path=luse_path, ignore_first_line=True)
     # Elevation map
-    meta_elev, grid_elev = read_file.read_asc_file(file_path=elev_path, ignore_first_line=True)
+    meta_elev, grid_elev = read_file.read_asc_file(file_path=elev_path, ignore_first_line=True, encoding="utf-8")
 
     #######################################
     #          Ploting input maps         #
@@ -71,7 +71,7 @@ if del_folder == "y" or new_folder:
     map_mask.write_html(rf"{new_path}\map_mask.html")
     # SOILS MAP #
     dict_luse = read_file.create_dict_luse(file_path=surface_path)
-    palette = ['#3a7535', "#9E711E", "#73C263", "#8D8D8D", "#ffc935", "#359b06", '#7a807a', '#7a807a', "#ff0000", '#7a807a', '#7a807a', '#7a807a', "#ff0800"]
+    palette = 10*['#3a7535', "#9E711E", "#73C263", "#8D8D8D", "#ffc935", "#359b06", '#7a807a', '#7a807a', "#ff0000", '#7a807a', '#7a807a', '#7a807a', "#ff0800"]
     map_soil = ploting.create_plotly_map_soil(grid=grid_soil, metadata=meta_soil, dict_luse=dict_luse, fig_dim=(1000,1000), palette=palette, title=f"Soil map {sim_name}")
     map_soil.write_html(rf"{new_path}\soil_map.html")
     map_luse = ploting.create_plotly_map_soil(grid=grid_luse, metadata=meta_luse, dict_luse=dict_luse, fig_dim=(1000,1000), palette=palette, title=f"Soil map {sim_name}")
@@ -79,6 +79,15 @@ if del_folder == "y" or new_folder:
     # Elevation map
     map_elev = ploting.create_plotly_map(grid=grid_elev, metadata=meta_elev, unit=["Elevation", "m"], grids_hover=[grid_soil], info_hover=["Soil type"], fig_dim=(1000,1000), title=f"Elev map {sim_name}" )
     map_elev.write_html(rf"{new_path}\map_elev.html")
+
+    #######################################
+    #          Checking connections       #
+    #######################################
+    print("* Checking connection between landuse in TREX *")
+    df_log = read_file.read_connect_log(r"connect_landuse_log.csv")
+    df_config = read_file.read_land_config(r"land_config.csv")
+    df_connec = data_handling.check_log_connect(df_log, df_config)
+    print(df_connec)
     
     #######################################
     #     Reading the output map files    #
@@ -94,8 +103,10 @@ if del_folder == "y" or new_folder:
     key = infiltration_depth_path.split("/")[-1]
     infiltdepth_paths = [rf"{path}\{file}" for file in os.listdir(path) if key in file]
     meta_infiltdepth, grids_infiltdepth = read_file.get_timed_grid(infiltdepth_paths, ignore_first_line=False)
-    gully_house_mask = data_handling.create_mask_luse(dict_luse, grid_soil, names_to_mask=['Gully', 'House'])
-    grids_infiltdepth_mask = [grid *~ gully_house_mask for grid in grids_infiltdepth ]
+    mask_infilt = ["Toit", "Toitc1", "Toitc3", "Toitc4", "Toitn1", "Toitn2", "Toitn3", "Toitn6", "Gully"]
+    infilt_mask = data_handling.create_mask_luse(dict_luse, grid_soil, names_to_mask=mask_infilt)
+    grids_infiltdepth_mask = [grid *~ infilt_mask for grid in grids_infiltdepth ]
+    gully_house_mask = data_handling.create_mask_luse(dict_luse, grid_soil, names_to_mask=["Gully", "Toit"])
     # Water depth
     path = "/".join(water_depth_path.split("/")[:-1])
     key = water_depth_path.split("/")[-1]
@@ -159,7 +170,7 @@ if del_folder == "y" or new_folder:
     map_network.write_html(rf"map_network.html")
     
     overland_stat = read_file.read_overland_stats(r"Outputs/Stat/overland_summary.stats")
-    df_inp = read_file.get_input_timeseries(r"Inputs/MHDC", 100)
+    df_inp = read_file.get_input_timeseries(r"Inputs/MHDC", 40)
     water_balance = data_handling.compute_water_balance(overland_stat, meta_luse, df_outfall, grids_infiltdepth[-1], gully_house_mask, df_inp, save_file=f"wb_{sim_name}" )
     print(water_balance)
     
